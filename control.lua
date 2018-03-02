@@ -88,7 +88,7 @@ function remove_player_buttons()
   for _,player in pairs(game.players) do    
     local base_element = player.gui.left.camera_frame
 
-    for child_element in base_element.children do
+    for _,child_element in pairs(base_element.children) do
       if has_value(player_button_names, child_element.name) then
         child_element.destroy() -- Needs 'reverse' ?
       end
@@ -98,12 +98,15 @@ end
 
 function add_player_buttons()
 
-  for index,player in pairs(game.players) do
+  for _,player in pairs(game.players) do
     local base_element = player.gui.left.camera_frame
-    local button_name = get_button_name(player)
-    local button = base_element.add{type = "button", name = button_name, caption = player.name}
-    button.style.top_padding = 0
-	  button.style.left_padding = 8
+
+    for _,target in pairs(game.players) do
+      local button_name = get_button_name(target)
+      local button = base_element.add{type = "button", name = button_name, caption = target.name}
+      button.style.top_padding = 0
+	    button.style.left_padding = 8
+    end
   end
 end
 
@@ -117,7 +120,7 @@ function update_camera_element()
   end
 end
 
-local function has_value(table, value)
+function has_value(table, value)
   for _,v in pairs(table) do
       if v == value then
           return true
