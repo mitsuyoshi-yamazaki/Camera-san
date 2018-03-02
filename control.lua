@@ -80,14 +80,14 @@ function update_player_buttons()
 end
 
 function remove_player_buttons()
-  local base_element = player.gui.left.camera_frame
-
   local player_button_names = {}
   for index,player in pairs(game.players) do
     player_button_names[index] = get_button_name(player)
   end
 
   for _,player in pairs(game.players) do    
+    local base_element = player.gui.left.camera_frame
+
     for child_element in base_element.children do
       if has_value(player_button_names, child_element.name) then
         child_element.destroy() -- Needs 'reverse' ?
@@ -97,9 +97,9 @@ function remove_player_buttons()
 end
 
 function add_player_buttons()
-  local base_element = player.gui.left.camera_frame
 
   for index,player in pairs(game.players) do
+    local base_element = player.gui.left.camera_frame
     local button_name = get_button_name(player)
     local button = base_element.add{type = "button", name = button_name, caption = player.name}
     button.style.top_padding = 0
