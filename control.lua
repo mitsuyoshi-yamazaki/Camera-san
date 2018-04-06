@@ -74,7 +74,7 @@ function create_camera_element(player)
   return camera_element
 end
 
-function update_player_buttons() 
+function update_player_buttons()
   remove_player_buttons()
   add_player_buttons()
 end
@@ -85,7 +85,7 @@ function remove_player_buttons()
     player_button_names[index] = get_button_name(player)
   end
 
-  for _,player in pairs(game.players) do    
+  for _,player in pairs(game.players) do
     local base_element = player.gui.left.camera_frame
 
     for _,child_element in pairs(base_element.children) do
@@ -97,21 +97,29 @@ function remove_player_buttons()
 end
 
 function add_player_buttons()
-
   for _,player in pairs(game.players) do
-    local base_element = player.gui.left.camera_frame
+    add_player_button(player)
+  end
+end
 
-    for _,target in pairs(game.players) do
-      local button_name = get_button_name(target)
-      local button = base_element.add{type = "button", name = button_name, caption = target.name}
-      button.style.top_padding = 0
-	    button.style.left_padding = 8
-    end
+function add_player_button(player)
+  local base_element = player.gui.left.camera_frame
+
+  for _,target in pairs(game.players) do
+    local button_name = get_button_name(target)
+    local button = base_element.add{type = "button", name = button_name, caption = target.name}
+    button.style.top_padding = 0
+    button.style.left_padding = 8
   end
 end
 
 function update_camera_element()
   for _,player in pairs(game.players) do
+    if player.gui.left.camera_frame == nil then
+      create_camera_element(player)
+      add_player_button(player)
+    end
+
     local camera_element = player.gui.left.camera_frame.camera
     local target = get_target_for(player)
 
