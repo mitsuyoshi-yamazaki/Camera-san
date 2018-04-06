@@ -1,14 +1,13 @@
 require "util"  -- I don't know what it does
 
-script.on_event(defines.events.on_player_created, function(event)
-  local player = game.players[event.player_index]
-  create_camera_element(player)
-  update_player_buttons()
-end)
+DEBUG = true
+
+
+-- Events --
+
 
 script.on_event(defines.events.on_gui_click, function(event)
   local player = game.players[event.player_index]
-  player.print(event.element.name)
 
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
@@ -17,8 +16,6 @@ script.on_event(defines.events.on_gui_click, function(event)
       local player = game.players[button.player_index]
       set_target_for(player, target)
       break
-    else
-      player.print("nop")
     end
   end
 end)
@@ -28,6 +25,10 @@ script.on_event(defines.events.on_tick, function(event)
     update_camera_element()
   end
 end)
+
+
+-- Functions --
+
 
 function get_button_name(player)
   return "button_" .. player.name
@@ -43,7 +44,7 @@ function get_target_for(player)
 end
 
 function set_target_for(player, target)
-  player.print("Change target from " .. get_target_for(player).name .. " to " .. target.name)
+  print_to(player, "Change target from " .. get_target_for(player).name .. " to " .. target.name)
   global[player.name] = target.index
 end
 
@@ -128,6 +129,10 @@ function update_camera_element()
   end
 end
 
+
+-- Utilities --
+
+
 function has_value(table, value)
   for _,v in pairs(table) do
       if v == value then
@@ -135,4 +140,10 @@ function has_value(table, value)
       end
   end
   return false
+end
+
+function print_to(player, message)
+  if DEBUG then
+    player.print(serpent.block(message))
+  end
 end
