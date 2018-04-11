@@ -1,6 +1,6 @@
 require "util"  -- I don't know what it does
 
-DEBUG = true
+DEBUG = false
 
 
 -- Events --
@@ -75,11 +75,6 @@ function create_camera_element(player)
   return camera_element
 end
 
-function update_player_buttons()
-  remove_player_buttons()
-  add_player_buttons()
-end
-
 function remove_player_buttons()
   local player_button_names = {}
   for index,player in pairs(game.players) do
@@ -97,35 +92,45 @@ function remove_player_buttons()
   end
 end
 
-function add_player_buttons()
-  for _,player in pairs(game.players) do
-    add_player_button(player)
-  end
-end
-
 function add_player_button(player)
   local base_element = player.gui.left.camera_frame
 
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
-    local button = base_element.add{type = "button", name = button_name, caption = target.name}
-    button.style.top_padding = 0
-    button.style.left_padding = 8
+
+    local has_character = target.connected
+    local has_target_button = base_element[button_name] ~= nil
+
+    if has_character and (has_target_button == false) then
+      -- add button
+      local button = base_element.add{type = "button", name = button_name, caption = target.name}
+      button.style.top_padding = 0
+      button.style.left_padding = 8
+
+    elseif (has_character == false) and has_target_button then
+      -- remove button
+      base_element[button_name].destroy()
+    else
+      -- do nothing
+    end
   end
 end
 
 function update_camera_element()
   for _,player in pairs(game.players) do
-    if player.gui.left.camera_frame == nil then
-      create_camera_element(player)
+    if player.connected then
+      if player.gui.left.camera_frame == nil then
+        create_camera_element(player)
+      end
+  
       add_player_button(player)
+  
+      local camera_element = player.gui.left.camera_frame.camera
+      local target = get_target_for(player)
+  
+      camera_element.position = target.position
+      camera_element.surface_index = target.surface.index  
     end
-
-    local camera_element = player.gui.left.camera_frame.camera
-    local target = get_target_for(player)
-
-    camera_element.position = target.position
-    camera_element.surface_index = target.surface.index
   end
 end
 
