@@ -51,7 +51,7 @@ end
 function create_camera_element(player)
   local root_element = player.gui.left
 
-  local base_element = root_element.add {type = "frame", name="camera_frame", direction = "vertical"}
+  local base_element = root_element.add {type = "frame", name = "camera_frame", direction = "vertical"}
   base_element.style.top_padding = 8
 	base_element.style.left_padding = 8
 	base_element.style.right_padding = 8
@@ -62,7 +62,7 @@ function create_camera_element(player)
   base_element.style.title_left_padding = 0
   base_element.style.maximal_width = 296
 
-  local camera_element = base_element.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
+  local camera_element = base_element.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
   camera_element.style.minimal_width = 280
   camera_element.style.minimal_height = 280
 
@@ -71,6 +71,10 @@ function create_camera_element(player)
   --local title_label = camera_element.add{type = "label", name = "title_label", caption = player.name}
   --title_label.style.top_padding = 0
 	--title_label.style.left_padding = 8
+
+  local fullscreen_button = camera_element.add {type = "button", name = "fullscreen_button", caption = "F"}
+  fullscreen_button.style.minimal_width = 40
+  fullscreen_button.style.minimal_height = 40
 
   return camera_element
 end
