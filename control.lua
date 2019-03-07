@@ -7,8 +7,6 @@ DEBUG = false
 
 
 script.on_event(defines.events.on_gui_click, function(event)
-  local player = game.players[event.player_index]
-
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
     if event.element.name == button_name then
