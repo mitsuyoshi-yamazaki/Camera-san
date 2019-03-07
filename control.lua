@@ -2,18 +2,29 @@ require "util"  -- I don't know what it does
 
 DEBUG = false
 
+FULLSCREEN_BUTTON_NAME = "fullscreen_button"
+MINIMAP_SIZE_DEFAULT = 296
 
 -- Events --
 
 
 script.on_event(defines.events.on_gui_click, function(event)
+
+  -- Fullscreen button --
+  if event.element.name == FULLSCREEN_BUTTON_NAME then
+    local player = game.players[event.player_index]
+    toggle_fullscreen(player)
+    return
+  end
+
+  -- Player buttons --
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
     if event.element.name == button_name then
       local button = event.element
       local player = game.players[button.player_index]
       set_target_for(player, target)
-      break
+      return
     end
   end
 end)
@@ -58,11 +69,19 @@ function create_camera_element(player)
   base_element.style.title_right_padding = 0
   base_element.style.title_bottom_padding = 2
   base_element.style.title_left_padding = 0
-  base_element.style.maximal_width = 296
+  base_element.style.minimal_width = 296
 
   local camera_element = base_element.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
   camera_element.style.minimal_width = 280
   camera_element.style.minimal_height = 280
+  camera_element.style.top_padding = 8
+	camera_element.style.left_padding = 8
+	camera_element.style.right_padding = 8
+  camera_element.style.bottom_padding = 8
+
+  camera_element.style.horizontally_stretchable = true
+  camera_element.style.vertically_stretchable = true
+
 
   set_target_for(player, player)
 
@@ -70,7 +89,7 @@ function create_camera_element(player)
   --title_label.style.top_padding = 0
 	--title_label.style.left_padding = 8
 
-  local fullscreen_button = camera_element.add {type = "button", name = "fullscreen_button", caption = "F"}
+  local fullscreen_button = camera_element.add {type = "button", name = FULLSCREEN_BUTTON_NAME, caption = "F"}
   fullscreen_button.style.minimal_width = 40
   fullscreen_button.style.minimal_height = 40
 
@@ -133,6 +152,20 @@ function update_camera_element()
       camera_element.position = target.position
       camera_element.surface_index = target.surface.index  
     end
+  end
+end
+
+function toggle_fullscreen(player)
+  local base_element = player.gui.left.camera_frame
+
+  if base_element.style.minimal_width <= MINIMAP_SIZE_DEFAULT then
+    -- Expand
+    base_element.style.minimal_width = 1000
+
+  else 
+    -- Collapse
+    base_element.style.minimal_width = MINIMAP_SIZE_DEFAULT
+
   end
 end
 
