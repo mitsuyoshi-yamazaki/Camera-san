@@ -1,3 +1,6 @@
+# Usage
+# $ make all
+
 ZIP=zip
 RM=rm
 VERSION=1.1.4
