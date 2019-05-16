@@ -56,10 +56,6 @@ function create_camera_element(player)
 	base_element.style.left_padding = 8
 	base_element.style.right_padding = 8
   base_element.style.bottom_padding = 8
-  base_element.style.title_top_padding = 0
-  base_element.style.title_right_padding = 0
-  base_element.style.title_bottom_padding = 2
-  base_element.style.title_left_padding = 0
   base_element.style.maximal_width = 296
 
   local camera_element = base_element.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
