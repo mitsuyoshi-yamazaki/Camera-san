@@ -11,6 +11,10 @@ SETTINGS.minimap_size = {}
 SETTINGS.minimap_size.default = 296
 SETTINGS.minimap_size.expanded = 1200
 
+SETTINGS.zoom_level = {}
+SETTINGS.zoom_level.default = 0.25
+SETTINGS.zoom_level.expanded = 0.5
+
 
 -- Events --
 
@@ -70,7 +74,7 @@ function create_camera_element(player)
   local base_element = root_element.add {type = "frame", name = "camera_frame", direction = "vertical"}
 		base_element.style.minimal_width = SETTINGS.minimap_size.default
 
-  local camera_element = base_element.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
+  local camera_element = base_element.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = SETTINGS.zoom_level.default}
   camera_element.style.minimal_width = 280
   camera_element.style.minimal_height = 280
   camera_element.style.top_padding = 6
@@ -152,17 +156,21 @@ function update_camera_element()
 end
 
 function toggle_fullscreen(player)
-  local base_element = player.gui.left.camera_frame
+		local base_element = player.gui.left.camera_frame
+		local camera_element = base_element.camera
 
   if base_element.style.minimal_width <= SETTINGS.minimap_size.default then
     -- Expand
     base_element.style.minimal_width = SETTINGS.minimap_size.expanded
     base_element.style.minimal_height = SETTINGS.minimap_size.expanded * 0.6
 
+				camera_element.zoom = SETTINGS.zoom_level.expanded
   else 
     -- Collapse
     base_element.style.minimal_width = SETTINGS.minimap_size.default
-    base_element.style.minimal_height = SETTINGS.minimap_size.default
+				base_element.style.minimal_height = SETTINGS.minimap_size.default
+				
+				camera_element.zoom = SETTINGS.zoom_level.default
   end
 end
 
