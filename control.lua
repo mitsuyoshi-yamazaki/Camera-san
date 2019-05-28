@@ -5,6 +5,7 @@ DEBUG = false
 SETTINGS = {}
 
 SETTINGS.name = {}
+SETTINGS.name.shrink_button = "shrink_button"
 SETTINGS.name.fullscreen_button = "fullscreen_button"
 
 SETTINGS.minimap_size = {}
@@ -24,7 +25,12 @@ script.on_event(defines.events.on_gui_click, function(event)
   -- Fullscreen button --
   if event.element.name == SETTINGS.name.fullscreen_button then
     local player = game.players[event.player_index]
-    toggle_fullscreen(player)
+    toggle_fullscreen(player, event.element)
+				return
+
+		elseif event.element.name == SETTINGS.name.shrink_button then
+    local player = game.players[event.player_index]
+    toggle_shrink(player, event.element)
     return
   end
 
@@ -74,10 +80,24 @@ function create_camera_element(player)
   local base_element = root_element.add {type = "frame", name = "camera_frame", direction = "vertical"}
 		base_element.style.minimal_width = SETTINGS.minimap_size.default
 
+		-- Add System Buttons
+		local button_flow = base_element.add {type = "flow", name = "button_flow", direction = "horizontal"}
+		local button_size = 32
+
+		local shrink_button = button_flow.add {type = "button", name = SETTINGS.name.shrink_button, caption = "Shrink"}
+			--shrink_button.style.width = button_size
+			shrink_button.style.height = button_size
+
+		local fullscreen_button = button_flow.add {type = "button", name = SETTINGS.name.fullscreen_button, caption = "Fullscreen"}
+  --fullscreen_button.style.width = button_size
+  fullscreen_button.style.height = button_size
+
+
+		-- Add Minimap
   local camera_element = base_element.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = SETTINGS.zoom_level.default}
   camera_element.style.minimal_width = 280
   camera_element.style.minimal_height = 280
-  camera_element.style.top_padding = 6
+  camera_element.style.top_padding = 0
 
   camera_element.style.horizontally_stretchable = true
   camera_element.style.vertically_stretchable = true
@@ -88,10 +108,6 @@ function create_camera_element(player)
   --local title_label = camera_element.add{type = "label", name = "title_label", caption = player.name}
   --title_label.style.top_padding = 0
 	 --title_label.style.left_padding = 8
-
-  local fullscreen_button = camera_element.add {type = "button", name = SETTINGS.name.fullscreen_button, caption = "F"}
-  fullscreen_button.style.minimal_width = 40
-  fullscreen_button.style.minimal_height = 40
 
   return camera_element
 end
@@ -155,22 +171,40 @@ function update_camera_element()
   end
 end
 
-function toggle_fullscreen(player)
+function toggle_fullscreen(player, button)
 		local base_element = player.gui.left.camera_frame
 		local camera_element = base_element.camera
 
   if base_element.style.minimal_width <= SETTINGS.minimap_size.default then
-    -- Expand
+				-- Expand
+				button.caption = "Exit"
+
     base_element.style.minimal_width = SETTINGS.minimap_size.expanded
     base_element.style.minimal_height = SETTINGS.minimap_size.expanded * 0.6
 
 				camera_element.zoom = SETTINGS.zoom_level.expanded
   else 
-    -- Collapse
+				-- Collapse
+				button.caption = "Fullscreen"
+
     base_element.style.minimal_width = SETTINGS.minimap_size.default
 				base_element.style.minimal_height = SETTINGS.minimap_size.default
 				
 				camera_element.zoom = SETTINGS.zoom_level.default
+  end
+end
+
+function toggle_shrink(player, button)
+		local base_element = player.gui.left.camera_frame
+		local camera_element = base_element.camera
+
+  if camera_element.visible then
+    -- Shrink
+				camera_element.visible = false
+
+			else 
+    -- Expand
+				camera_element.visible = true
   end
 end
 
