@@ -77,11 +77,11 @@ end
 function create_camera_element(player)
   local root_element = player.gui.left
 
-  local base_element = root_element.add {type = "frame", name = "camera_frame", direction = "vertical"}
-		base_element.style.minimal_width = SETTINGS.minimap_size.default
+  local camera_frame = root_element.add {type = "frame", name = "camera_frame", direction = "vertical"}
+		camera_frame.style.minimal_width = SETTINGS.minimap_size.default
 
 		-- Add System Buttons
-		local button_flow = base_element.add {type = "flow", name = "button_flow", direction = "horizontal"}
+		local button_flow = camera_frame.add {type = "flow", name = "button_flow", direction = "horizontal"}
 		local button_size = 32
 
 		local shrink_button = button_flow.add {type = "button", name = SETTINGS.name.shrink_button, caption = "Shrink"}
@@ -94,7 +94,7 @@ function create_camera_element(player)
 
 
 		-- Add Minimap
-  local camera_element = base_element.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = SETTINGS.zoom_level.default}
+  local camera_element = camera_frame.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = SETTINGS.zoom_level.default}
   camera_element.style.minimal_width = 280
   camera_element.style.minimal_height = 280
   camera_element.style.top_padding = 0
@@ -112,6 +112,10 @@ function create_camera_element(player)
   return camera_element
 end
 
+function get_camera_frame_for(player)
+		return player.gui.left.camera_frame
+end
+
 function remove_player_buttons()
   local player_button_names = {}
   for index,player in pairs(game.players) do
@@ -119,9 +123,9 @@ function remove_player_buttons()
   end
 
   for _,player in pairs(game.players) do
-    local base_element = player.gui.left.camera_frame
+    local camera_frame = get_camera_frame_for(player)
 
-    for _,child_element in pairs(base_element.children) do
+    for _,child_element in pairs(camera_frame.children) do
       if has_value(player_button_names, child_element.name) then
         child_element.destroy() -- Needs 'reverse' ?
       end
@@ -130,23 +134,23 @@ function remove_player_buttons()
 end
 
 function add_player_button(player)
-  local base_element = player.gui.left.camera_frame
+  local camera_frame = get_camera_frame_for(player)
 
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
 
     local has_character = target.connected
-    local has_target_button = base_element[button_name] ~= nil
+    local has_target_button = camera_frame[button_name] ~= nil
 
     if has_character and (has_target_button == false) then
       -- add button
-      local button = base_element.add{type = "button", name = button_name, caption = target.name}
+      local button = camera_frame.add{type = "button", name = button_name, caption = target.name}
       button.style.top_padding = 0
       button.style.left_padding = 8
 
     elseif (has_character == false) and has_target_button then
       -- remove button
-      base_element[button_name].destroy()
+      camera_frame[button_name].destroy()
     else
       -- do nothing
     end
@@ -156,13 +160,13 @@ end
 function update_camera_element()
   for _,player in pairs(game.players) do
     if player.connected then
-      if player.gui.left.camera_frame == nil then
+      if get_camera_frame_for(player) == nil then
         create_camera_element(player)
       end
   
       add_player_button(player)
   
-      local camera_element = player.gui.left.camera_frame.camera
+      local camera_element = get_camera_frame_for(player).camera
       local target = get_target_for(player)
   
       camera_element.position = target.position
@@ -172,31 +176,31 @@ function update_camera_element()
 end
 
 function toggle_fullscreen(player, button)
-		local base_element = player.gui.left.camera_frame
-		local camera_element = base_element.camera
+		local camera_frame = get_camera_frame_for(player)
+		local camera_element = camera_frame.camera
 
-  if base_element.style.minimal_width <= SETTINGS.minimap_size.default then
+  if camera_frame.style.minimal_width <= SETTINGS.minimap_size.default then
 				-- Expand
 				button.caption = "Exit"
 
-    base_element.style.minimal_width = SETTINGS.minimap_size.expanded
-    base_element.style.minimal_height = SETTINGS.minimap_size.expanded * 0.6
+    camera_frame.style.minimal_width = SETTINGS.minimap_size.expanded
+    camera_frame.style.minimal_height = SETTINGS.minimap_size.expanded * 0.6
 
 				camera_element.zoom = SETTINGS.zoom_level.expanded
   else 
 				-- Collapse
 				button.caption = "Fullscreen"
 
-    base_element.style.minimal_width = SETTINGS.minimap_size.default
-				base_element.style.minimal_height = SETTINGS.minimap_size.default
+    camera_frame.style.minimal_width = SETTINGS.minimap_size.default
+				camera_frame.style.minimal_height = SETTINGS.minimap_size.default
 				
 				camera_element.zoom = SETTINGS.zoom_level.default
   end
 end
 
 function toggle_shrink(player, button)
-		local base_element = player.gui.left.camera_frame
-		local camera_element = base_element.camera
+		local camera_frame = get_camera_frame_for(player)
+		local camera_element = camera_frame.camera
 
   if camera_element.visible then
     -- Shrink
