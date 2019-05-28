@@ -2,8 +2,15 @@ require "util"  -- I don't know what it does
 
 DEBUG = false
 
-FULLSCREEN_BUTTON_NAME = "fullscreen_button"
-MINIMAP_SIZE_DEFAULT = 296
+SETTINGS = {}
+
+SETTINGS.name = {}
+SETTINGS.name.fullscreen_button = "fullscreen_button"
+
+SETTINGS.minimap_size = {}
+SETTINGS.minimap_size.default = 296
+SETTINGS.minimap_size.expanded = 1200
+
 
 -- Events --
 
@@ -11,7 +18,7 @@ MINIMAP_SIZE_DEFAULT = 296
 script.on_event(defines.events.on_gui_click, function(event)
 
   -- Fullscreen button --
-  if event.element.name == FULLSCREEN_BUTTON_NAME then
+  if event.element.name == SETTINGS.name.fullscreen_button then
     local player = game.players[event.player_index]
     toggle_fullscreen(player)
     return
@@ -61,7 +68,7 @@ function create_camera_element(player)
   local root_element = player.gui.left
 
   local base_element = root_element.add {type = "frame", name = "camera_frame", direction = "vertical"}
-		base_element.style.minimal_width = MINIMAP_SIZE_DEFAULT
+		base_element.style.minimal_width = SETTINGS.minimap_size.default
 
   local camera_element = base_element.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
   camera_element.style.minimal_width = 280
@@ -76,9 +83,9 @@ function create_camera_element(player)
 
   --local title_label = camera_element.add{type = "label", name = "title_label", caption = player.name}
   --title_label.style.top_padding = 0
-	--title_label.style.left_padding = 8
+	 --title_label.style.left_padding = 8
 
-  local fullscreen_button = camera_element.add {type = "button", name = FULLSCREEN_BUTTON_NAME, caption = "F"}
+  local fullscreen_button = camera_element.add {type = "button", name = SETTINGS.name.fullscreen_button, caption = "F"}
   fullscreen_button.style.minimal_width = 40
   fullscreen_button.style.minimal_height = 40
 
@@ -147,14 +154,15 @@ end
 function toggle_fullscreen(player)
   local base_element = player.gui.left.camera_frame
 
-  if base_element.style.minimal_width <= MINIMAP_SIZE_DEFAULT then
+  if base_element.style.minimal_width <= SETTINGS.minimap_size.default then
     -- Expand
-    base_element.style.minimal_width = 1000
+    base_element.style.minimal_width = SETTINGS.minimap_size.expanded
+    base_element.style.minimal_height = SETTINGS.minimap_size.expanded * 0.6
 
   else 
     -- Collapse
-    base_element.style.minimal_width = MINIMAP_SIZE_DEFAULT
-
+    base_element.style.minimal_width = SETTINGS.minimap_size.default
+    base_element.style.minimal_height = SETTINGS.minimap_size.default
   end
 end
 
