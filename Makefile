@@ -14,12 +14,8 @@ all: setup
 .PHONY: setup
 setup: ${OUTPUT}
 
-${OUTPUT}: ${MOD_VERSIONED_NAME}
-	${ZIP} -r $@ $<
-	${RM} -r $<
-
-${MOD_VERSIONED_NAME}:
-	cp -r ${MOD_BASE_NAME} $@
+${OUTPUT}:
+	${ZIP} -r ${OUTPUT} info.json changelog.txt control.lua 
 
 .PHONY: clean
 clean:
