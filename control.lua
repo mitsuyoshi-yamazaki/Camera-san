@@ -116,6 +116,15 @@ function get_camera_frame_for(player)
 		return player.gui.left.camera_frame
 end
 
+function get_player_button_flow_for(player)
+		return get_camera_frame_for(player).player_button_flow
+end
+
+function has_player_button_for(player)
+  local button_name = get_button_name(player)
+		return get_camera_frame_for(player)[button_name] ~= nil
+end
+
 function remove_player_buttons()
   local player_button_names = {}
   for index,player in pairs(game.players) do
@@ -140,7 +149,7 @@ function add_player_button(player)
     local button_name = get_button_name(target)
 
     local has_character = target.connected
-    local has_target_button = camera_frame[button_name] ~= nil
+    local has_target_button = has_player_button_for(target)
 
     if has_character and (has_target_button == false) then
       -- add button
