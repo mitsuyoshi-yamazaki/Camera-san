@@ -1,12 +1,12 @@
 require "util"  -- I don't know what it does
 
-DEBUG = false
+DEBUG = true
 
 SETTINGS = {}
 
-SETTINGS.name = {}
-SETTINGS.name.shrink_button = "shrink_button"
-SETTINGS.name.fullscreen_button = "fullscreen_button"
+SETTINGS.element_name = {}
+SETTINGS.element_name.shrink_button = "shrink_button"
+SETTINGS.element_name.camera = "camera"
 
 SETTINGS.minimap_size = {}
 SETTINGS.minimap_size.default = 296
@@ -16,25 +16,26 @@ SETTINGS.zoom_level = {}
 SETTINGS.zoom_level.default = 0.25
 SETTINGS.zoom_level.expanded = 0.5
 
-
 -- Events --
 
 
 script.on_event(defines.events.on_gui_click, function(event)
 
-  -- Fullscreen button --
-  if event.element.name == SETTINGS.name.fullscreen_button then
+		print_to(game.players[event.player_index], event.element.name)
+
+  -- Camera Element --
+  if event.element.name == SETTINGS.element_name.camera then
     local player = game.players[event.player_index]
     toggle_fullscreen(player, event.element)
 				return
 
-		elseif event.element.name == SETTINGS.name.shrink_button then
+		elseif event.element.name == SETTINGS.element_name.shrink_button then
     local player = game.players[event.player_index]
     toggle_shrink(player, event.element)
     return
   end
 
-  -- Player buttons --
+  -- Player Buttons --
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
     if event.element.name == button_name then
@@ -84,17 +85,17 @@ function create_camera_element(player)
 		local button_flow = camera_frame.add {type = "flow", name = "button_flow", direction = "horizontal"}
 		local button_size = 32
 
-		local shrink_button = button_flow.add {type = "button", name = SETTINGS.name.shrink_button, caption = "Shrink"}
+		local shrink_button = button_flow.add {type = "button", name = SETTINGS.element_name.shrink_button, caption = "-"}
 			--shrink_button.style.width = button_size
 			shrink_button.style.height = button_size
 
-		local fullscreen_button = button_flow.add {type = "button", name = SETTINGS.name.fullscreen_button, caption = "Fullscreen"}
+--		local fullscreen_button = button_flow.add {type = "button", name = SETTINGS.element_name.fullscreen_button, caption = "+"}
   --fullscreen_button.style.width = button_size
-  fullscreen_button.style.height = button_size
+  --fullscreen_button.style.height = button_size
 
 
 		-- Add Minimap
-  local camera_element = camera_frame.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = SETTINGS.zoom_level.default}
+  local camera_element = camera_frame.add {type = "camera", name = SETTINGS.element_name.camera, position = player.position, surface_index = player.surface.index, zoom = SETTINGS.zoom_level.default}
   camera_element.style.minimal_width = 280
   camera_element.style.minimal_height = 280
   camera_element.style.top_padding = 0
