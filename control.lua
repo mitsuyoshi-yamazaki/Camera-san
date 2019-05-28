@@ -210,14 +210,17 @@ end
 function toggle_shrink(player, button)
 		local camera_frame = get_camera_frame_for(player)
 		local camera_element = camera_frame.camera
+  local player_button_flow = get_player_button_flow_for(player)
 
   if camera_element.visible then
     -- Shrink
 				camera_element.visible = false
+				player_button_flow.visible = false
 
 			else 
     -- Expand
 				camera_element.visible = true
+				player_button_flow.visible = true
   end
 end
 
