@@ -103,11 +103,11 @@ function create_camera_element(player)
   camera_element.style.vertically_stretchable = true
 
 
-  set_target_for(player, player)
+		-- Add Player Button Flow
+		local player_button_flow = camera_frame.add {type = "flow", name = "player_button_flow", direction = "vertical"}
 
-  --local title_label = camera_element.add{type = "label", name = "title_label", caption = player.name}
-  --title_label.style.top_padding = 0
-	 --title_label.style.left_padding = 8
+
+  set_target_for(player, player)
 
   return camera_element
 end
@@ -122,7 +122,7 @@ end
 
 function has_player_button_for(player)
   local button_name = get_button_name(player)
-		return get_camera_frame_for(player)[button_name] ~= nil
+		return get_player_button_flow_for(player)[button_name] ~= nil
 end
 
 function remove_player_buttons()
@@ -143,7 +143,7 @@ function remove_player_buttons()
 end
 
 function add_player_button(player)
-  local camera_frame = get_camera_frame_for(player)
+  local player_button_flow = get_player_button_flow_for(player)
 
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
@@ -153,13 +153,13 @@ function add_player_button(player)
 
     if has_character and (has_target_button == false) then
       -- add button
-      local button = camera_frame.add{type = "button", name = button_name, caption = target.name}
+      local button = player_button_flow.add{type = "button", name = button_name, caption = target.name}
       button.style.top_padding = 0
       button.style.left_padding = 8
 
     elseif (has_character == false) and has_target_button then
       -- remove button
-      camera_frame[button_name].destroy()
+      player_button_flow[button_name].destroy()
     else
       -- do nothing
     end
