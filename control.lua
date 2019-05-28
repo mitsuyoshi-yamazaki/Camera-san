@@ -65,14 +65,15 @@ function create_camera_element(player)
 	 base_element.style.left_padding = 8
  	base_element.style.right_padding = 8
   base_element.style.bottom_padding = 8
-  base_element.style.maximal_width = 296
+		base_element.style.maximal_width = 296
+		base_element.style.minimal_width = MINIMAP_SIZE_DEFAULT
 
   local camera_element = base_element.add {type = "camera", name = "camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
   camera_element.style.minimal_width = 280
   camera_element.style.minimal_height = 280
   camera_element.style.top_padding = 8
-	camera_element.style.left_padding = 8
-	camera_element.style.right_padding = 8
+	 camera_element.style.left_padding = 8
+	 camera_element.style.right_padding = 8
   camera_element.style.bottom_padding = 8
 
   camera_element.style.horizontally_stretchable = true
@@ -154,7 +155,7 @@ end
 function toggle_fullscreen(player)
   local base_element = player.gui.left.camera_frame
 
-  if (base_element.style.minimal_width ~= nil) and (base_element.style.minimal_width <= MINIMAP_SIZE_DEFAULT) then
+  if base_element.style.minimal_width <= MINIMAP_SIZE_DEFAULT then
     -- Expand
     base_element.style.minimal_width = 1000
 
