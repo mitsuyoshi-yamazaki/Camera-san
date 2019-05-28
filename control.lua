@@ -154,7 +154,7 @@ end
 function toggle_fullscreen(player)
   local base_element = player.gui.left.camera_frame
 
-  if base_element.style.minimal_width <= MINIMAP_SIZE_DEFAULT then
+  if (base_element.style.minimal_width ~= nil) and (base_element.style.minimal_width <= MINIMAP_SIZE_DEFAULT) then
     -- Expand
     base_element.style.minimal_width = 1000
 
