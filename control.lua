@@ -7,7 +7,7 @@ CAMERA_TOGGLE_BUTTON = "camera_toggle"
 
 -- Events --
 
-script.on_load(function(event)
+script.on_init(function(event)
   global["toggle"] = {}
 end)
 
@@ -19,9 +19,6 @@ script.on_event(defines.events.on_player_created, function(event)
     name = CAMERA_TOGGLE_BUTTON,
     caption = "Camera"
   })
-  if not global["toggle"] then
-    global["toggle"] = {}
-  end
   global["toggle"][event.player_index] = true
 end)
 
