@@ -1,5 +1,5 @@
 require "util"  -- I don't know what it does
-require "mod-gui"
+require "mod-gui" -- this? https://github.com/wube/factorio-data/blob/556fd3f5de22fc768468a071dae51af7c4f601d5/core/lualib/mod-gui.lua
 
 DEBUG = false
 CAMERA_TOGGLE_BUTTON = "camera_toggle"
@@ -21,12 +21,14 @@ script.on_event(defines.events.on_gui_click, function(event)
   end
   local element_name = event.element.name
 		if element_name == CAMERA_TOGGLE_BUTTON then
-			 player.gui.left.camera_frame.visible = not player.gui.left.camera_frame.visible
+				local camera_frame = get_root_element_for(player).camera_frame
+			 camera_frame.visible = not camera_frame.visible
   end
 end)
 
 script.on_event(defines.events.on_tick, function(event)
   if game.tick % 1 == 0 then
+				malicious_vicious_migration()
     update_camera_element()
   end
 end)
@@ -53,6 +55,10 @@ function set_target_for(player, target)
   global[player.name] = target.index
 end
 
+function get_root_element_for(player)
+		return mod_gui.get_frame_flow(player)
+end
+
 function create_toggle_button(player)
   mod_gui.get_frame_flow(player).add({
     type = "button",
@@ -62,12 +68,12 @@ function create_toggle_button(player)
 end
 
 function create_camera_element(player)
-  local root_element = player.gui.left
+  local root_element = get_root_element_for(player)
 
   local base_element = root_element.add {type = "frame", name="camera_frame", direction = "vertical"}
   base_element.style.top_padding = 8
-	base_element.style.left_padding = 8
-	base_element.style.right_padding = 8
+	 base_element.style.left_padding = 8
+	 base_element.style.right_padding = 8
   base_element.style.bottom_padding = 8
   base_element.style.maximal_width = 296
 
@@ -76,10 +82,6 @@ function create_camera_element(player)
   camera_element.style.minimal_height = 280
 
   set_target_for(player, player)
-
-  --local title_label = camera_element.add{type = "label", name = "title_label", caption = player.name}
-  --title_label.style.top_padding = 0
-	--title_label.style.left_padding = 8
 
   return camera_element
 end
@@ -91,7 +93,7 @@ function remove_player_buttons()
   end
 
   for _,player in pairs(game.players) do
-    local base_element = player.gui.left.camera_frame
+    local base_element = get_root_element_for(player).camera_frame
 
     for _,child_element in pairs(base_element.children) do
       if has_value(player_button_names, child_element.name) then
@@ -102,7 +104,7 @@ function remove_player_buttons()
 end
 
 function add_player_button(player)
-  local base_element = player.gui.left.camera_frame
+  local base_element = get_root_element_for(player).camera_frame
 
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
@@ -127,8 +129,8 @@ end
 
 function update_camera_element()
   for _,player in pairs(game.players) do
-    if player.connected then
-        if player.gui.left.camera_frame == nil then
+				if player.connected then
+        if get_root_element_for(player).camera_frame == nil then
           create_camera_element(player)
 								end
 								
@@ -138,7 +140,7 @@ function update_camera_element()
 
         add_player_button(player)
 
-        local camera_element = player.gui.left.camera_frame.camera
+        local camera_element = get_root_element_for(player).camera_frame.camera
         local target = get_target_for(player)
 
         camera_element.position = target.position
@@ -147,6 +149,15 @@ function update_camera_element()
   end
 end
 
+function malicious_vicious_migration()
+		-- This function removes GUI elements created by Camera-san v1.1.4 or prior
+		for _,player in pairs(game.players) do
+				if player.gui.left.camera_frame ~= nil then
+						player.gui.left.camera_frame.destroy()
+						print_to(player, "player.gui.left.camera_frame.destroy()")
+				end
+		end
+end
 
 -- Utilities --
 
