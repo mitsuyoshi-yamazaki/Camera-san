@@ -1,8 +1,13 @@
 require "util"  -- I don't know what it does
 require "mod-gui" -- this? https://github.com/wube/factorio-data/blob/556fd3f5de22fc768468a071dae51af7c4f601d5/core/lualib/mod-gui.lua
 
-DEBUG = false
-CAMERA_TOGGLE_BUTTON = "camera_toggle"
+SETTINGS = {}
+SETTINGS.DEBUG = false
+
+SETTINGS.ELEMENT_NAMES = {}
+SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON = "camera_toggle_button"
+SETTINGS.ELEMENT_NAMES.CAMERA_FRAME = "camera_frame"
+SETTINGS.ELEMENT_NAMES.SHRINKED_FRAME = "shrinked_frame"
 
 
 -- Events --
@@ -20,9 +25,13 @@ script.on_event(defines.events.on_gui_click, function(event)
     end
   end
   local element_name = event.element.name
-		if element_name == CAMERA_TOGGLE_BUTTON then
-				local camera_frame = get_root_element_for(player).camera_frame
-			 camera_frame.visible = not camera_frame.visible
+		if element_name == SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON then
+				local root_element = get_root_element_for(player)
+				local camera_frame = root_element[SETTINGS.ELEMENT_NAMES.CAMERA_FRAME]
+				local shrinked_frame = root_element[SETTINGS.ELEMENT_NAMES.SHRINKED_FRAME]
+
+				camera_frame.visible = not camera_frame.visible
+				shrinked_frame.visible = not camera_frame.visible
   end
 end)
 
@@ -59,32 +68,41 @@ function get_root_element_for(player)
 		return mod_gui.get_frame_flow(player)
 end
 
-function create_toggle_button(player)
-  mod_gui.get_frame_flow(player).add({
-    type = "button",
-    name = CAMERA_TOGGLE_BUTTON,
-    caption = "Camera"
-  })
-end
-
 function create_camera_element(player)
   local root_element = get_root_element_for(player)
 
-  local base_element = root_element.add {type = "frame", name="camera_frame", direction = "vertical"}
-  base_element.style.top_padding = 8
-	 base_element.style.left_padding = 8
-	 base_element.style.right_padding = 8
-  base_element.style.bottom_padding = 8
-  base_element.style.maximal_width = 296
+		--
+  local camera_frame = root_element.add {type = "frame", name=SETTINGS.ELEMENT_NAMES.CAMERA_FRAME, direction = "vertical"}
+  camera_frame.style.top_padding = 8
+	 camera_frame.style.left_padding = 8
+	 camera_frame.style.right_padding = 8
+  camera_frame.style.bottom_padding = 8
+		camera_frame.style.maximal_width = 296
+		
+		local toggle_button_props = {
+    type = "button",
+    name = SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON,
+    caption = "Camera"
+  }
+		camera_frame.add(toggle_button_props)
 
-  local camera_element = base_element.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
+  local camera_element = camera_frame.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
   camera_element.style.minimal_width = 280
   camera_element.style.minimal_height = 280
 
   set_target_for(player, player)
 
-  return camera_element
-end
+		--
+  local shrinked_frame = root_element.add {type = "frame", name=SETTINGS.ELEMENT_NAMES.SHRINKED_FRAME, direction = "horizontal"}
+  shrinked_frame.style.top_padding = 8
+	 shrinked_frame.style.left_padding = 8
+	 shrinked_frame.style.right_padding = 8
+  shrinked_frame.style.bottom_padding = 8
+		shrinked_frame.style.maximal_width = 296
+		shrinked_frame.visible = not camera_frame.visible
+
+		shrinked_frame.add(toggle_button_props)
+	end
 
 function remove_player_buttons()
   local player_button_names = {}
@@ -93,7 +111,7 @@ function remove_player_buttons()
   end
 
   for _,player in pairs(game.players) do
-    local base_element = get_root_element_for(player).camera_frame
+    local base_element = get_root_element_for(player)[SETTINGS.ELEMENT_NAMES.CAMERA_FRAME]
 
     for _,child_element in pairs(base_element.children) do
       if has_value(player_button_names, child_element.name) then
@@ -104,7 +122,7 @@ function remove_player_buttons()
 end
 
 function add_player_button(player)
-  local base_element = get_root_element_for(player).camera_frame
+  local base_element = get_root_element_for(player)[SETTINGS.ELEMENT_NAMES.CAMERA_FRAME]
 
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
@@ -130,17 +148,14 @@ end
 function update_camera_element()
   for _,player in pairs(game.players) do
 				if player.connected then
-        if get_root_element_for(player).camera_frame == nil then
+								local root_element = get_root_element_for(player)
+        if root_element[SETTINGS.ELEMENT_NAMES.CAMERA_FRAME] == nil then
           create_camera_element(player)
-								end
-								
-								if mod_gui.get_frame_flow(player)[CAMERA_TOGGLE_BUTTON] == nil then
-										create_toggle_button(player)
 								end
 
         add_player_button(player)
 
-        local camera_element = get_root_element_for(player).camera_frame.camera
+        local camera_element = root_element[SETTINGS.ELEMENT_NAMES.CAMERA_FRAME].camera
         local target = get_target_for(player)
 
         camera_element.position = target.position
@@ -151,6 +166,7 @@ end
 
 function malicious_vicious_migration()
 		-- This function removes GUI elements created by Camera-san v1.1.4 or prior
+		-- How can we appropriately do this?
 		for _,player in pairs(game.players) do
 				if player.gui.left.camera_frame ~= nil then
 						player.gui.left.camera_frame.destroy()
@@ -172,7 +188,7 @@ function has_value(table, value)
 end
 
 function print_to(player, message)
-  if DEBUG then
+  if SETTINGS.DEBUG then
     player.print(serpent.block(message))
   end
 end
