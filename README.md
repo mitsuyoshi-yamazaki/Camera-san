@@ -14,7 +14,7 @@ This mod aims to improve communication in multiplay game.
 ```shell
 $ cd path/to/mods
 $ git clone git@github.com:mitsuyoshi-yamazaki/Camera-san.git
-$ mv Camera-san Camera-san_1.2.0
+$ mv Camera-san Camera-san_1.2.1
 ```
 
 Then add the following into `mod-list.json`
