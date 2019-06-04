@@ -3,6 +3,8 @@
 
 ZIP=zip
 RM=rm
+CP=cp
+MKDIR=mkdir
 VERSION=1.2.1
 MOD_BASE_NAME=Camera-san
 MOD_VERSIONED_NAME=${MOD_BASE_NAME}_${VERSION}
@@ -15,7 +17,15 @@ all: setup
 setup: ${OUTPUT}
 
 ${OUTPUT}:
-	${ZIP} -r ${OUTPUT} info.json changelog.txt control.lua 
+	if [ -e ${MOD_VERSIONED_NAME} ]; then\
+		${RM} -r ${MOD_VERSIONED_NAME};\
+	fi
+	if [ -e ${OUTPUT} ]; then\
+		${RM} ${OUTPUT};\
+	fi
+	${MKDIR} ${MOD_VERSIONED_NAME}
+	${CP} {info.json,changelog.txt,control.lua} ${MOD_VERSIONED_NAME}
+	${ZIP} -r ${OUTPUT} ${MOD_VERSIONED_NAME}
 
 .PHONY: clean
 clean:
