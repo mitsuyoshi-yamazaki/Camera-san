@@ -7,21 +7,6 @@ CAMERA_TOGGLE_BUTTON = "camera_toggle"
 
 -- Events --
 
-script.on_init(function(event)
-  global["toggle"] = {}
-end)
-
-script.on_event(defines.events.on_player_created, function(event)
-  local player = game.players[event.player_index]
-
-  mod_gui.get_button_flow(player).add({
-    type = "button",
-    name = CAMERA_TOGGLE_BUTTON,
-    caption = "Camera"
-  })
-  global["toggle"][event.player_index] = true
-end)
-
 script.on_event(defines.events.on_gui_click, function(event)
   local player = game.players[event.player_index]
 
@@ -35,8 +20,8 @@ script.on_event(defines.events.on_gui_click, function(event)
     end
   end
   local element_name = event.element.name
-  if element_name == CAMERA_TOGGLE_BUTTON then
-    global["toggle"][event.player_index] = not global["toggle"][event.player_index]
+		if element_name == CAMERA_TOGGLE_BUTTON then
+			 player.gui.left.camera_frame.visible = not player.gui.left.camera_frame.visible
   end
 end)
 
@@ -66,6 +51,14 @@ end
 function set_target_for(player, target)
   print_to(player, "Change target from " .. get_target_for(player).name .. " to " .. target.name)
   global[player.name] = target.index
+end
+
+function create_toggle_button(player)
+  mod_gui.get_frame_flow(player).add({
+    type = "button",
+    name = CAMERA_TOGGLE_BUTTON,
+    caption = "Camera"
+  })
 end
 
 function create_camera_element(player)
@@ -135,10 +128,13 @@ end
 function update_camera_element()
   for _,player in pairs(game.players) do
     if player.connected then
-      if global["toggle"][player.index] then
         if player.gui.left.camera_frame == nil then
           create_camera_element(player)
-        end
+								end
+								
+								if mod_gui.get_frame_flow(player)[CAMERA_TOGGLE_BUTTON] == nil then
+										create_toggle_button(player)
+								end
 
         add_player_button(player)
 
@@ -147,9 +143,6 @@ function update_camera_element()
 
         camera_element.position = target.position
         camera_element.surface_index = target.surface.index
-      elseif player.gui.left.camera_frame ~= nil then
-        player.gui.left.camera_frame.destroy()
-      end
     end
   end
 end
