@@ -77,7 +77,8 @@ function create_camera_element(player)
 	 camera_frame.style.left_padding = 8
 	 camera_frame.style.right_padding = 8
   camera_frame.style.bottom_padding = 8
-		camera_frame.style.maximal_width = 296
+		camera_frame.style.minimal_width = 304
+		camera_frame.style.maximal_width = 304
 		
 		local toggle_button_props = {
     type = "button",
