@@ -2,7 +2,7 @@ require "util"  -- I don't know what it does
 require "mod-gui" -- this? https://github.com/wube/factorio-data/blob/556fd3f5de22fc768468a071dae51af7c4f601d5/core/lualib/mod-gui.lua
 
 SETTINGS = {}
-SETTINGS.DEBUG = false
+SETTINGS.DEBUG = true
 
 SETTINGS.ELEMENT_NAMES = {}
 SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON = "camera_toggle_button"
@@ -15,23 +15,20 @@ SETTINGS.ELEMENT_NAMES.SHRINKED_FRAME = "shrinked_frame"
 script.on_event(defines.events.on_gui_click, function(event)
   local player = game.players[event.player_index]
 
+		local element_name = event.element.name
+		if element_name == SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON then
+			toggle_gui(player)
+			return
+  end
+
   for _,target in pairs(game.players) do
     local button_name = get_button_name(target)
     if event.element.name == button_name then
       local button = event.element
       local player = game.players[button.player_index]
       set_target_for(player, target)
-      break
+      return
     end
-  end
-  local element_name = event.element.name
-		if element_name == SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON then
-				local root_element = get_root_element_for(player)
-				local camera_frame = root_element[SETTINGS.ELEMENT_NAMES.CAMERA_FRAME]
-				local shrinked_frame = root_element[SETTINGS.ELEMENT_NAMES.SHRINKED_FRAME]
-
-				camera_frame.visible = not camera_frame.visible
-				shrinked_frame.visible = not camera_frame.visible
   end
 end)
 
@@ -71,35 +68,37 @@ end
 function create_camera_element(player)
   local root_element = get_root_element_for(player)
 
+		local padding = 8
+		local camera_size = 280
+
 		--
   local camera_frame = root_element.add {type = "frame", name=SETTINGS.ELEMENT_NAMES.CAMERA_FRAME, direction = "vertical"}
-  camera_frame.style.top_padding = 8
-	 camera_frame.style.left_padding = 8
-	 camera_frame.style.right_padding = 8
-  camera_frame.style.bottom_padding = 8
-		camera_frame.style.minimal_width = 304
-		camera_frame.style.maximal_width = 304
+  camera_frame.style.top_padding = padding
+	 camera_frame.style.left_padding = padding
+	 camera_frame.style.right_padding = padding
+  camera_frame.style.bottom_padding = padding
+		camera_frame.style.minimal_width = camera_size + padding * 3
 		
 		local toggle_button_props = {
     type = "button",
     name = SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON,
     caption = "Camera"
   }
-		camera_frame.add(toggle_button_props)
 
   local camera_element = camera_frame.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
-  camera_element.style.minimal_width = 280
-  camera_element.style.minimal_height = 280
+  camera_element.style.minimal_width = camera_size
+  camera_element.style.minimal_height = camera_size
+
+		camera_element.add(toggle_button_props)
 
   set_target_for(player, player)
 
 		--
   local shrinked_frame = root_element.add {type = "frame", name=SETTINGS.ELEMENT_NAMES.SHRINKED_FRAME, direction = "horizontal"}
-  shrinked_frame.style.top_padding = 8
-	 shrinked_frame.style.left_padding = 8
-	 shrinked_frame.style.right_padding = 8
-  shrinked_frame.style.bottom_padding = 8
-		shrinked_frame.style.maximal_width = 296
+  shrinked_frame.style.top_padding = padding
+	 shrinked_frame.style.left_padding = padding
+	 shrinked_frame.style.right_padding = padding
+  shrinked_frame.style.bottom_padding = padding
 		shrinked_frame.visible = not camera_frame.visible
 
 		shrinked_frame.add(toggle_button_props)
@@ -163,6 +162,17 @@ function update_camera_element()
         camera_element.surface_index = target.surface.index
     end
   end
+end
+
+function toggle_gui(player)
+				local root_element = get_root_element_for(player)
+				local camera_frame = root_element[SETTINGS.ELEMENT_NAMES.CAMERA_FRAME]
+				local shrinked_frame = root_element[SETTINGS.ELEMENT_NAMES.SHRINKED_FRAME]
+
+				camera_frame.visible = not camera_frame.visible
+				shrinked_frame.visible = not camera_frame.visible
+
+				print_to(player, camera_frame.visible)
 end
 
 function malicious_vicious_migration()
