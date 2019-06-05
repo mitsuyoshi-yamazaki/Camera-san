@@ -2,7 +2,8 @@ require "util"  -- I don't know what it does
 require "mod-gui" -- this? https://github.com/wube/factorio-data/blob/556fd3f5de22fc768468a071dae51af7c4f601d5/core/lualib/mod-gui.lua
 
 SETTINGS = {}
-SETTINGS.DEBUG = true
+SETTINGS.DEBUG = false
+SETTINGS.VERSION = "v1.2.1"
 
 SETTINGS.ELEMENT_NAMES = {}
 SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON = "camera_toggle_button"
@@ -79,17 +80,15 @@ function create_camera_element(player)
   camera_frame.style.bottom_padding = padding
 		camera_frame.style.minimal_width = camera_size + padding * 3
 		
-		local toggle_button_props = {
-    type = "button",
-    name = SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON,
-    caption = "Camera"
-  }
-
   local camera_element = camera_frame.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
   camera_element.style.minimal_width = camera_size
   camera_element.style.minimal_height = camera_size
 
-		camera_element.add(toggle_button_props)
+		camera_element.add({
+    type = "button",
+    name = SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON,
+    caption = "Camera"
+  })
 
   set_target_for(player, player)
 
@@ -101,7 +100,13 @@ function create_camera_element(player)
   shrinked_frame.style.bottom_padding = padding
 		shrinked_frame.visible = not camera_frame.visible
 
-		shrinked_frame.add(toggle_button_props)
+		shrinked_frame.add({
+    type = "button",
+    name = SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON,
+    caption = "Camera-san "..SETTINGS.VERSION
+  })
+
+		--shrinked_frame.add({type = "label", name = "Version", caption = SETTINGS.VERSION})
 	end
 
 function remove_player_buttons()
