@@ -3,7 +3,7 @@ require "mod-gui" -- this? https://github.com/wube/factorio-data/blob/556fd3f5de
 
 SETTINGS = {}
 SETTINGS.DEBUG = false
-SETTINGS.VERSION = "v1.2.2"
+SETTINGS.VERSION = "v1.2.3"
 
 SETTINGS.ELEMENT_NAMES = {}
 SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON = "camera_toggle_button"
