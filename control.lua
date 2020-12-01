@@ -3,7 +3,7 @@ local mod_gui = require("mod-gui") -- https://github.com/wube/factorio-data/blob
 
 SETTINGS = {}
 SETTINGS.DEBUG = false
-SETTINGS.VERSION = "v1.2.4"
+SETTINGS.VERSION = "v1.3.0"
 
 SETTINGS.ELEMENT_NAMES = {}
 SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON = "camera_toggle_button"
@@ -66,6 +66,10 @@ function get_root_element_for(player)
 		return mod_gui.get_frame_flow(player)
 end
 
+function zoom_rate_for(player)
+  return settings.get_player_settings(player)["camera-san-zoom"].value
+end
+
 function create_camera_element(player)
   local root_element = get_root_element_for(player)
 
@@ -79,8 +83,9 @@ function create_camera_element(player)
 	 camera_frame.style.right_padding = padding
   camera_frame.style.bottom_padding = padding
 		camera_frame.style.minimal_width = camera_size + padding * 3
-		
-  local camera_element = camera_frame.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = 0.25}
+    
+  local zoom = zoom_rate_for(player)
+  local camera_element = camera_frame.add {type = "camera", name="camera", position = player.position, surface_index = player.surface.index, zoom = zoom}
   camera_element.style.minimal_width = camera_size
   camera_element.style.minimal_height = camera_size
 
@@ -165,6 +170,9 @@ function update_camera_element()
 
         camera_element.position = target.position
         camera_element.surface_index = target.surface.index
+
+        local zoom = zoom_rate_for(player)
+        camera_element.zoom = zoom
     end
   end
 end
