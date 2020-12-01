@@ -1,9 +1,9 @@
 require "util"  -- I don't know what it does
-require "mod-gui" -- this? https://github.com/wube/factorio-data/blob/556fd3f5de22fc768468a071dae51af7c4f601d5/core/lualib/mod-gui.lua
+local mod_gui = require("mod-gui") -- https://github.com/wube/factorio-data/blob/master/core/lualib/mod-gui.lua
 
 SETTINGS = {}
 SETTINGS.DEBUG = false
-SETTINGS.VERSION = "v1.2.3"
+SETTINGS.VERSION = "v1.2.4"
 
 SETTINGS.ELEMENT_NAMES = {}
 SETTINGS.ELEMENT_NAMES.CAMERA_TOGGLE_BUTTON = "camera_toggle_button"
