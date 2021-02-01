@@ -1,0 +1,21 @@
+# see: https://docs.github.com/en/actions/quickstart
+
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Release
+        run: |
+          make all
